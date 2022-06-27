@@ -56,5 +56,10 @@ namespace AuthenticationAndAuthorization.Controllers
             return View(registerDTO);
 
         }
+        [AllowAnonymous]
+        public IActionResult Login()
+        {
+            return View();
+        }
     }
 }
