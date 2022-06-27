@@ -24,7 +24,7 @@ namespace AuthenticationAndAuthorization.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult Index()
+        public IActionResult Register()
         {
             return View();
         }
