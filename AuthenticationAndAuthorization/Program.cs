@@ -1,7 +1,16 @@
+using AuthenticationAndAuthorization.Infrastructure.Contexts;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<SqlContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ornekDb"));
+});
+
 
 var app = builder.Build();
 
