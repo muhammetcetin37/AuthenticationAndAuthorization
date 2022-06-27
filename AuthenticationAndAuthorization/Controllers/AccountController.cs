@@ -76,7 +76,7 @@ namespace AuthenticationAndAuthorization.Controllers
 
                     if (signInResult.Succeeded)
                     {
-                        return RedirectToAction(loginDTO.ReturnUrl);
+                        return RedirectToAction("Index", "Home");
                     }
                     else
                     {
