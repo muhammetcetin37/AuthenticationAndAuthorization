@@ -1,16 +1,28 @@
 using AuthenticationAndAuthorization.Infrastructure.Contexts;
+using AuthenticationAndAuthorization.Models.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+//DbContext ekleniyor
 builder.Services.AddDbContext<SqlContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("ornekDb"));
 });
+builder.Services.AddIdentity<AppUser, IdentityRole>(x =>
+{
+    x.SignIn.RequireConfirmedPhoneNumber = false;
+    x.SignIn.RequireConfirmedEmail = false;
+    x.SignIn.RequireConfirmedAccount = false;
+    x.Password.RequiredLength = 3;
+    x.Password.RequireUppercase = false;
+    x.Password.RequiredUniqueChars = 0;
+    x.Password.RequireLowercase = false;
 
+}).AddEntityFrameworkStores<SqlContext>().AddDefaultTokenProviders();
 
 var app = builder.Build();
 
@@ -22,7 +34,7 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
