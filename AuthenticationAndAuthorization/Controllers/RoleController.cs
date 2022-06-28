@@ -1,4 +1,5 @@
-﻿using AuthenticationAndAuthorization.Models.Entities;
+﻿using AuthenticationAndAuthorization.Models.DTOs;
+using AuthenticationAndAuthorization.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
@@ -55,7 +56,7 @@ namespace AuthenticationAndAuthorization.Controllers
         {
             IdentityRole identityRole = await roleManager.FindByIdAsync(Id);
             List<AppUser> hasRole = new List<AppUser>();
-            List<AppUser> hasNotRole = new List<AppUser>();
+            List<AppUser> HasNotRole = new List<AppUser>();
             foreach (AppUser user in userManager.Users)
             {
                 //var list = await userManager.IsInRoleAsync(user, identityRole.Name) ? hasRole : hasNotRole;
@@ -67,10 +68,17 @@ namespace AuthenticationAndAuthorization.Controllers
                 }
                 else
                 {
-                    hasNotRole.Add(user);
+                    HasNotRole.Add(user);
                 }
 
             }
+            AssignedRoleDTO assignedRoleDTO = new AssignedRoleDTO
+            {
+                Role = identityRole,
+                HasRole = hasRole,
+                HasNotRole = HasNotRole,
+                RoleName = identityRole.Name
+            };
             return View();
         }
     }
