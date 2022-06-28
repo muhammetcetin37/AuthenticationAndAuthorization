@@ -78,10 +78,8 @@ namespace AuthenticationAndAuthorization.Controllers
                     {
                         return RedirectToAction("Index", "Home");
                     }
-                    else
-                    {
-                        ModelState.AddModelError("", "Kullanici Adi yada Şifre Yanliş");
-                    }
+
+                    ModelState.AddModelError("", "Kullanici Adi yada Şifre Yanliş");
 
                 }
 
@@ -94,5 +92,19 @@ namespace AuthenticationAndAuthorization.Controllers
             await signInManager.SignOutAsync();
             return RedirectToAction("Login");
         }
+        [HttpGet]
+        public async Task<IActionResult> Edit()
+        {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+
+            UserUpdateDTO userUpdateDTO = new UserUpdateDTO(user);
+
+            return View(userUpdateDTO);
+        }
+        //public async Task<IActionResult> Edit()
+        //{
+
+
+        //}
     }
 }
