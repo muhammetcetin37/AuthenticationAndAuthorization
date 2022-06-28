@@ -6,8 +6,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AuthenticationAndAuthorization.Controllers
 {
-    //[Authorize(Roles = "admin")]
-    //[Authorize(Roles = "manager")]
+    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "manager")]
     public class RoleController : Controller
     {
         private readonly UserManager<AppUser> userManager;
@@ -19,6 +19,7 @@ namespace AuthenticationAndAuthorization.Controllers
             this.roleManager = roleManager;
         }
         public IActionResult Index()
+
         {
             return View(roleManager.Roles.ToList());
         }
@@ -52,7 +53,7 @@ namespace AuthenticationAndAuthorization.Controllers
 
             return View(name);
         }
-        public async Task<IActionResult> AssignedUsers(string Id)
+        public async Task<IActionResult> AssignedUser(string Id)
         {
             IdentityRole identityRole = await roleManager.FindByIdAsync(Id);
             List<AppUser> hasRole = new List<AppUser>();
@@ -79,7 +80,37 @@ namespace AuthenticationAndAuthorization.Controllers
                 HasNotRole = HasNotRole,
                 RoleName = identityRole.Name
             };
-            return View();
+            return View(assignedRoleDTO);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignedUser(AssignedRoleDTO roleDTO)
+        {
+            IdentityResult result;
+            string[] addIds = roleDTO.AddIds;
+            string[] delIds = roleDTO.DeleteIds;
+
+            if (addIds != null)
+            {
+                foreach (var userId in addIds)
+                {
+                    AppUser user = await userManager.FindByIdAsync(userId);
+                    result = await userManager.AddToRoleAsync(user, roleDTO.RoleName);
+
+                }
+            }
+
+            if (delIds != null)
+            {
+                foreach (var userId in delIds)
+                {
+                    AppUser user = await userManager.FindByIdAsync(userId);
+                    result = await userManager.RemoveFromRoleAsync(user, roleDTO.RoleName);
+
+                }
+            }
+
+            return RedirectToAction("Index");
         }
     }
 }

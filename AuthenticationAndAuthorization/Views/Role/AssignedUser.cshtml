@@ -5,7 +5,9 @@
         <div class="card-header">
             <h3>Role Manager</h3>
         </div>
-        <form>
+        <form asp-action="AssignedUser" method="post">
+            <input type="hidden" asp-for="RoleName"></input>
+            <input type="hidden" asp-for="Role"></input>
             <div class="card-body">
                 <div class="row">
                     <div class="col-sm-6">
