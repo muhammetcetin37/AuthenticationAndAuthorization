@@ -1,12 +1,12 @@
 ﻿using AuthenticationAndAuthorization.Models.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace AuthenticationAndAuthorization.Controllers
 {
-    [Authorize(Roles = "admin")]
-    [Authorize(Roles = "manager")]
+    //[Authorize(Roles = "admin")]
+    //[Authorize(Roles = "manager")]
     public class RoleController : Controller
     {
         private readonly UserManager<AppUser> userManager;
@@ -19,7 +19,59 @@ namespace AuthenticationAndAuthorization.Controllers
         }
         public IActionResult Index()
         {
-            return View(roleManager.Roles);
+            return View(roleManager.Roles.ToList());
+        }
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(
+            [Required(ErrorMessage ="Role Alanı Zorunludur")]
+            [MinLength(3,ErrorMessage ="En az 3 karakter olmalıdır")]
+            string name)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await roleManager.CreateAsync(new IdentityRole(name));
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Index", "Role");
+                }
+                else
+                {
+                    foreach (var item in result.Errors)
+                    {
+                        ModelState.AddModelError("", item.Description);
+                    }
+                }
+            }
+
+            return View(name);
+        }
+        public async Task<IActionResult> AssignedUsers(string Id)
+        {
+            IdentityRole identityRole = await roleManager.FindByIdAsync(Id);
+            List<AppUser> hasRole = new List<AppUser>();
+            List<AppUser> hasNotRole = new List<AppUser>();
+            foreach (AppUser user in userManager.Users)
+            {
+                //var list = await userManager.IsInRoleAsync(user, identityRole.Name) ? hasRole : hasNotRole;
+                //list.Add(user);
+                bool sonuc = await userManager.IsInRoleAsync(user, identityRole.Name);
+                if (sonuc)
+                {
+                    hasRole.Add(user);
+                }
+                else
+                {
+                    hasNotRole.Add(user);
+                }
+
+            }
+            return View();
         }
     }
 }
